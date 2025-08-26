@@ -186,7 +186,7 @@ export default function Layout({ children }) {
           <div className="cookie-warning-content">
             <h3>Cookies Required</h3>
             <p>
-              This site requires cookies to keep you logged in and provide a secure rental experience.<br />
+              This site requires cookies to keep you logged in and provide a secure reading experience.<br />
               Please enable cookies in your browser settings and disable any extensions that block cookies.
             </p>
             <button className="btn-primary" onClick={() => setShowCookieWarning(false)}>
@@ -231,9 +231,6 @@ export default function Layout({ children }) {
               </li>
               <li className={isActive('/catalog')}>
                 <Link href="/catalog" onClick={() => setMobileMenuOpen(false)}>Catalog</Link>
-              </li>
-              <li className={isActive('/pickup-request')}>
-                <Link href="/pickup-request" onClick={() => setMobileMenuOpen(false)}>Ride_?</Link>
               </li>
               <li className={isActive('/about')}>
                 <Link href="/about" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
@@ -280,14 +277,7 @@ export default function Layout({ children }) {
                           All Orders
                         </Link>
                       </li>
-                      <li className={isActive('/all-pickup-requests')}>
-                        <Link href="/all-pickup-requests" onClick={() => {
-                          setAdminDropdownOpen(false);
-                          setMobileMenuOpen(false);
-                        }}>
-                          All Pickup Requests
-                        </Link>
-                      </li>
+
                     </ul>
                   )}
                 </li>
@@ -363,11 +353,7 @@ export default function Layout({ children }) {
                           My Library
                         </Link>
                       </li>
-                      <li>
-                        <Link href="/my-pickup-requests" onClick={() => setProfileDropdownOpen(false)}>
-                          My Pickup Requests
-                        </Link>
-                      </li>
+
                       {isAdmin && (
                         <li className="admin-section-header">Admin Options</li>
                       )}
