@@ -1,6 +1,6 @@
-import dbConnect from '../../../lib/mongodb';
-import Product from '../../../models/Product';
-import Order from '../../../models/Order';
+import dbConnect from '../../../../lib/mongodb';
+import Product from '../../../../models/Product';
+import Order from '../../../../models/Order';
 import jwt from 'jsonwebtoken';
 
 export default async function handler(req, res) {
