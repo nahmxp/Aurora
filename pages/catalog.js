@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { useRouter } from 'next/router';
 import ProductCard from '../components/ProductCard';
 import Link from 'next/link';
 import CategoryTabs from '../components/CategoryTabs';
@@ -7,6 +8,8 @@ import FilterBar from '../components/FilterBar';
 import { useAuth } from '../lib/AuthContext';
 
 export default function Catalog() {
+  const router = useRouter();
+  const { audience } = router.query;
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,7 +23,15 @@ export default function Catalog() {
   const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(1000);
+  const [targetAudienceFilter, setTargetAudienceFilter] = useState('all');
   const { isAuthenticated, isAdmin } = useAuth();
+
+  // Set target audience filter from URL parameter
+  useEffect(() => {
+    if (audience && ['kids', 'adults', 'higher-education'].includes(audience)) {
+      setTargetAudienceFilter(audience);
+    }
+  }, [audience]);
 
   // Fetch all products from API
   useEffect(() => {
@@ -97,6 +108,11 @@ export default function Catalog() {
         selectedBrands.includes('all') || 
         selectedBrands.includes(product.brand);
       
+      // Check if product matches target audience filter
+      const audienceMatch = 
+        targetAudienceFilter === 'all' || 
+        product.targetAudience === targetAudienceFilter;
+      
       // Check if product matches rental filter
       const rentalMatch = 
         !showRentalOnly || 
@@ -109,7 +125,7 @@ export default function Catalog() {
         (product.price >= priceRange.min && product.price <= priceRange.max);
       
       // Product must match all criteria
-      return categoryMatch && brandMatch && rentalMatch && priceMatch;
+      return categoryMatch && brandMatch && audienceMatch && rentalMatch && priceMatch;
     });
 
     // Apply sorting

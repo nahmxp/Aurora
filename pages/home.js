@@ -15,7 +15,7 @@ export default function Home() {
       icon: '📚',
       gradient: 'linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%)',
       features: ['AI Voice Narration', 'Interactive Stories', 'Age-Appropriate Content', 'Visual Learning'],
-      link: '/kids-books'
+      link: '/catalog?audience=kids'
     },
     {
       id: 'adults',
@@ -25,7 +25,7 @@ export default function Home() {
       icon: '📖',
       gradient: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
       features: ['Fiction & Non-Fiction', 'Self-Development', 'Digital & Physical', 'Personal Library'],
-      link: '/adult-books'
+      link: '/catalog?audience=adults'
     },
     {
       id: 'education',
@@ -35,7 +35,7 @@ export default function Home() {
       icon: '🎓',
       gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       features: ['Academic Journals', 'Research Papers', 'Citation Tools', 'Advanced Search'],
-      link: '/academic-resources'
+      link: '/catalog?audience=higher-education'
     }
   ];
 
