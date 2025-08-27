@@ -145,14 +145,24 @@ function AddProduct() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
-    if (type === 'checkbox') {
+
+    // Handle digitalContent.* fields first for correct nested updates
+    if (name.startsWith('digitalContent.')) {
+      const [, field] = name.split('.');
+      setForm({
+        ...form,
+        digitalContent: {
+          ...form.digitalContent,
+          [field]: type === 'checkbox' ? checked : value
+        }
+      });
+    } else if (type === 'checkbox') {
       setForm({
         ...form,
         [name]: checked,
       });
     } else if (name.startsWith('rentalPrice.')) {
-      const [_, field] = name.split('.');
+      const [, field] = name.split('.');
       setForm({
         ...form,
         rentalPrice: {
@@ -161,21 +171,12 @@ function AddProduct() {
         }
       });
     } else if (name.startsWith('ageRange.')) {
-      const [_, field] = name.split('.');
+      const [, field] = name.split('.');
       setForm({
         ...form,
         ageRange: {
           ...form.ageRange,
           [field]: value
-        }
-      });
-    } else if (name.startsWith('digitalContent.')) {
-      const [_, field] = name.split('.');
-      setForm({
-        ...form,
-        digitalContent: {
-          ...form.digitalContent,
-          [field]: type === 'checkbox' ? checked : value
         }
       });
     } else if (name === 'format') {
@@ -191,7 +192,7 @@ function AddProduct() {
         [name]: value,
       });
     }
-    
+
     // Clear API error when user makes changes
     if (apiError) setApiError('');
   };
