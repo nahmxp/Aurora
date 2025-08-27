@@ -1,9 +1,9 @@
 import dbConnect from '../../../../lib/mongodb';
 import Product from '../../../../models/Product';
 import Order from '../../../../models/Order';
-import jwt from 'jsonwebtoken';
+import { requireAuth } from '../../../../lib/auth';
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
@@ -13,25 +13,13 @@ export default async function handler(req, res) {
 
     // Get book ID from query
     const { id } = req.query;
+    const { userId } = req; // This comes from requireAuth middleware
 
     if (!id) {
       return res.status(400).json({ message: 'Book ID is required' });
     }
 
-    // Verify JWT token
-    const token = req.headers.authorization?.replace('Bearer ', '') || req.cookies.token;
-    
-    if (!token) {
-      return res.status(401).json({ message: 'Authentication required' });
-    }
-
-    let userId;
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      userId = decoded.id;
-    } catch (error) {
-      return res.status(401).json({ message: 'Invalid token' });
-    }
+    console.log('Checking access for userId:', userId, 'bookId:', id);
 
     // Find the book
     const book = await Product.findById(id);
@@ -40,11 +28,29 @@ export default async function handler(req, res) {
       return res.status(404).json({ message: 'Book not found' });
     }
 
-    // Check if user has purchased this book
+    // Check if user has this book in their library (any paid order)
+    console.log('Checking access for userId:', userId, 'bookId:', id);
+    
     const order = await Order.findOne({
-      user: userId,
-      'items.product': id,
-      paymentStatus: 'completed'
+      userId: userId,
+      'items.productId': id,
+      status: { $in: ['paid', 'confirmed', 'sent', 'delivered'] }
+    });
+
+    console.log('Found order:', order ? 'Yes' : 'No');
+    if (order) {
+      console.log('Order status:', order.status);
+      console.log('Order items:', order.items.map(item => ({ productId: item.productId, name: item.name })));
+    }
+
+    // Also check all orders for this user to debug
+    const allUserOrders = await Order.find({ userId: userId });
+    console.log('All user orders:', allUserOrders.length);
+    allUserOrders.forEach((o, i) => {
+      console.log(`Order ${i + 1}:`, {
+        status: o.status,
+        items: o.items.map(item => ({ productId: item.productId, name: item.name }))
+      });
     });
 
     const hasAccess = !!order;
@@ -81,3 +87,5 @@ export default async function handler(req, res) {
     res.status(500).json({ message: 'Server error' });
   }
 }
+
+export default requireAuth(handler);
